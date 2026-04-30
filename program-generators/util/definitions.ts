@@ -1,13 +1,11 @@
 // imports
 
 export const IMPORT_RCLPY = "import rclpy";
-export const IMPORT_NUMPY = "import numpy as np";
-export const IMPORT_CV2 = "import cv2";
-export const IMPORT_DEPTHAI = "import depthai as dai";
-export const IMPORT_BLOBCONVERTER = "import blobconverter";
 export const IMPORT_SYS = "import sys";
 export const IMPORT_TIME = "import time";
 export const IMPORT_LOGGING = "import logging";
+export const IMPORT_DETECTION_2D_ARRAY =
+    "from vision_msgs.msg import Detection2DArray";
 export const IMPORT_PLAY_AUDIO_FROM_SPREECH =
     "from datatypes.srv import PlayAudioFromSpeech";
 export const IMPORT_APPLY_JOINT_TRAJECTORY =
