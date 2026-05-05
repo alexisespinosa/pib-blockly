@@ -1,5 +1,37 @@
 import * as Blockly from "blockly";
 
+export const display_on_face_blocks =
+    Blockly.common.createBlockDefinitionsFromJsonArray([
+        {
+            type: "display_on_face",
+            message0: "Display on pib's face:  %1  %2",
+            args0: [
+                {
+                    type: "field_dropdown",
+                    name: "SOURCE",
+                    options: [
+                        ["Camera", "CAMERA"],
+                        ["Camera with face overlay", "CAMERA_FACE_OVERLAY"],
+                    ],
+                },
+                {
+                    type: "field_dropdown",
+                    name: "SETTING",
+                    options: [
+                        ["start", "START"],
+                        ["stop", "STOP"],
+                    ],
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 200,
+            tooltip:
+                "Shows the camera feed (optionally with face detection overlay) on pib's face screen",
+            helpUrl: "",
+        },
+    ]);
+
 export const face_detector_blocks =
     Blockly.common.createBlockDefinitionsFromJsonArray([
         {
