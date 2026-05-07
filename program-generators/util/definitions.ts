@@ -8,6 +8,9 @@ export const IMPORT_CV2 = "import cv2";
 export const IMPORT_NUMPY = "import numpy as np";
 export const IMPORT_COMPRESSED_IMAGE =
     "from sensor_msgs.msg import CompressedImage";
+export const IMPORT_INT32 = "from std_msgs.msg import Int32";
+export const IMPORT_INT32_MULTI_ARRAY =
+    "from std_msgs.msg import Int32MultiArray";
 export const IMPORT_DETECTION_2D_ARRAY =
     "from vision_msgs.msg import Detection2DArray";
 export const IMPORT_DISPLAY_IMAGE =
