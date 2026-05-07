@@ -32,6 +32,61 @@ export const display_on_face_blocks =
         },
     ]);
 
+export const depth_detector_blocks =
+    Blockly.common.createBlockDefinitionsFromJsonArray([
+        {
+            type: "depth_detector_start_stop",
+            message0: "Depth Detector:  %1",
+            args0: [
+                {
+                    type: "field_dropdown",
+                    name: "SETTING",
+                    options: [
+                        ["start", "START"],
+                        ["stop", "END"],
+                    ],
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 200,
+            tooltip:
+                "Starts or stops the depth detector (subscribes to /vision/depth)",
+            helpUrl: "",
+        },
+
+        {
+            type: "depth_detector_get_distance",
+            message0: "Get distance at  x: %1  y: %2  into %3",
+            args0: [
+                {
+                    type: "input_value",
+                    name: "X",
+                    check: "Number",
+                },
+                {
+                    type: "input_value",
+                    name: "Y",
+                    check: "Number",
+                },
+                {
+                    type: "field_variable",
+                    name: "DISTANCE",
+                    variable: "distance_mm",
+                    variableTypes: ["Number"],
+                    defaultType: "Number",
+                },
+            ],
+            inputsInline: true,
+            previousStatement: null,
+            nextStatement: null,
+            colour: 200,
+            tooltip:
+                "Reads the depth (in millimeters) at the given pixel coordinates from the latest depth frame",
+            helpUrl: "",
+        },
+    ]);
+
 export const face_detector_blocks =
     Blockly.common.createBlockDefinitionsFromJsonArray([
         {

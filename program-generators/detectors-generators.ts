@@ -6,7 +6,9 @@ import {
     IMPORT_DETECTION_2D_ARRAY,
     IMPORT_DISPLAY_IMAGE,
     IMPORT_DISPLAY_OVERLAY,
+    IMPORT_IMAGE,
     IMPORT_LOGGING,
+    IMPORT_NUMPY,
     IMPORT_RCLPY,
     IMPORT_SYS,
     INIT_ROS,
@@ -208,6 +210,74 @@ export function display_on_face(
 
         return lines.join("\n");
     }
+}
+
+export function depth_detector_start_stop(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const dropDownSetting = block.getFieldValue("SETTING");
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        IMPORT_SYS,
+        IMPORT_LOGGING,
+        IMPORT_IMAGE,
+        IMPORT_NUMPY,
+        CONFIGURE_LOGGING,
+        INIT_ROS,
+    });
+
+    if (dropDownSetting === "START") {
+        return [
+            `_depth_detector_latest = None`,
+            ``,
+            `def _depth_detector_on_msg(msg):`,
+            `${generator.INDENT}global _depth_detector_latest`,
+            `${generator.INDENT}_depth_detector_latest = np.frombuffer(msg.data, dtype=np.uint16).reshape(msg.height, msg.width)`,
+            ``,
+            `_depth_detector_subscription = node.create_subscription(`,
+            `${generator.INDENT}Image, '/vision/depth',`,
+            `${generator.INDENT}_depth_detector_on_msg, 10,`,
+            `)`,
+            `logging.info("Starting depth detector (subscribed to /vision/depth)")`,
+            ``,
+        ].join("\n");
+    } else {
+        return [
+            `node.destroy_subscription(_depth_detector_subscription)`,
+            `logging.info("Closing depth detector")`,
+            ``,
+        ].join("\n");
+    }
+}
+
+export function depth_detector_get_distance(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const distanceVar = generator.getVariableName(
+        block.getFieldValue("DISTANCE"),
+    );
+    const x = generator.valueToCode(block, "X", 0) || "0";
+    const y = generator.valueToCode(block, "Y", 0) || "0";
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        IMPORT_NUMPY,
+        INIT_ROS,
+    });
+
+    return [
+        `rclpy.spin_once(node, timeout_sec=0.1)`,
+        `if _depth_detector_latest is not None:`,
+        `${generator.INDENT}_dx = int(max(0, min(${x}, _depth_detector_latest.shape[1] - 1)))`,
+        `${generator.INDENT}_dy = int(max(0, min(${y}, _depth_detector_latest.shape[0] - 1)))`,
+        `${generator.INDENT}${distanceVar} = int(_depth_detector_latest[_dy, _dx])`,
+        `else:`,
+        `${generator.INDENT}${distanceVar} = 0`,
+        ``,
+    ].join("\n");
 }
 
 export {pythonGenerator};
