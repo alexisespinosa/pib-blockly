@@ -6,9 +6,9 @@ import {
     IMPORT_DETECTION_2D_ARRAY,
     IMPORT_DISPLAY_IMAGE,
     IMPORT_DISPLAY_OVERLAY,
-    IMPORT_IMAGE,
+    IMPORT_INT32,
+    IMPORT_INT32_MULTI_ARRAY,
     IMPORT_LOGGING,
-    IMPORT_NUMPY,
     IMPORT_RCLPY,
     IMPORT_SYS,
     INIT_ROS,
@@ -222,30 +222,34 @@ export function depth_detector_start_stop(
         IMPORT_RCLPY,
         IMPORT_SYS,
         IMPORT_LOGGING,
-        IMPORT_IMAGE,
-        IMPORT_NUMPY,
+        IMPORT_INT32,
+        IMPORT_INT32_MULTI_ARRAY,
         CONFIGURE_LOGGING,
         INIT_ROS,
     });
 
     if (dropDownSetting === "START") {
         return [
-            `_depth_detector_latest = None`,
+            `_depth_detector_latest = 0`,
             ``,
-            `def _depth_detector_on_msg(msg):`,
+            `def _depth_detector_on_result(msg):`,
             `${generator.INDENT}global _depth_detector_latest`,
-            `${generator.INDENT}_depth_detector_latest = np.frombuffer(msg.data, dtype=np.uint16).reshape(msg.height, msg.width)`,
+            `${generator.INDENT}_depth_detector_latest = msg.data`,
             ``,
-            `_depth_detector_subscription = node.create_subscription(`,
-            `${generator.INDENT}Image, '/vision/depth',`,
-            `${generator.INDENT}_depth_detector_on_msg, 10,`,
+            `_depth_result_subscription = node.create_subscription(`,
+            `${generator.INDENT}Int32, '/vision/depth_result',`,
+            `${generator.INDENT}_depth_detector_on_result, 10,`,
             `)`,
-            `logging.info("Starting depth detector (subscribed to /vision/depth)")`,
+            `_depth_query_publisher = node.create_publisher(`,
+            `${generator.INDENT}Int32MultiArray, '/vision/depth_query', 10,`,
+            `)`,
+            `logging.info("Starting depth detector")`,
             ``,
         ].join("\n");
     } else {
         return [
-            `node.destroy_subscription(_depth_detector_subscription)`,
+            `node.destroy_subscription(_depth_result_subscription)`,
+            `node.destroy_publisher(_depth_query_publisher)`,
             `logging.info("Closing depth detector")`,
             ``,
         ].join("\n");
@@ -264,18 +268,16 @@ export function depth_detector_get_distance(
 
     Object.assign(generator.definitions_, {
         IMPORT_RCLPY,
-        IMPORT_NUMPY,
+        IMPORT_INT32_MULTI_ARRAY,
         INIT_ROS,
     });
 
     return [
+        `_depth_query_msg = Int32MultiArray()`,
+        `_depth_query_msg.data = [int(${x}), int(${y})]`,
+        `_depth_query_publisher.publish(_depth_query_msg)`,
         `rclpy.spin_once(node, timeout_sec=0.1)`,
-        `if _depth_detector_latest is not None:`,
-        `${generator.INDENT}_dx = int(max(0, min(${x}, _depth_detector_latest.shape[1] - 1)))`,
-        `${generator.INDENT}_dy = int(max(0, min(${y}, _depth_detector_latest.shape[0] - 1)))`,
-        `${generator.INDENT}${distanceVar} = int(_depth_detector_latest[_dy, _dx])`,
-        `else:`,
-        `${generator.INDENT}${distanceVar} = 0`,
+        `${distanceVar} = _depth_detector_latest`,
         ``,
     ].join("\n");
 }
