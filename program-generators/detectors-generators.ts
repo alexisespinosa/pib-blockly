@@ -274,7 +274,7 @@ export function depth_detector_get_distance(
 
     return [
         `_depth_query_msg = Int32MultiArray()`,
-        `_depth_query_msg.data = [int(${x}), int(${y})]`,
+        `_depth_query_msg.data = [int(${x} + ${RAW_FRAME_HALF_WIDTH}), int(${RAW_FRAME_HALF_HEIGHT} - ${y})]`,
         `_depth_query_publisher.publish(_depth_query_msg)`,
         `rclpy.spin_once(node, timeout_sec=0.1)`,
         `${distanceVar} = _depth_detector_latest`,
