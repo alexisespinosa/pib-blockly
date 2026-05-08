@@ -87,6 +87,66 @@ export const depth_detector_blocks =
         },
     ]);
 
+export const sound_detector_blocks =
+    Blockly.common.createBlockDefinitionsFromJsonArray([
+        {
+            type: "sound_detector_start_stop",
+            message0: "Sound Detector:  %1",
+            args0: [
+                {
+                    type: "field_dropdown",
+                    name: "SETTING",
+                    options: [
+                        ["start", "START"],
+                        ["stop", "END"],
+                    ],
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 160,
+            tooltip:
+                "Starts or stops the sound detector (subscribes to /hearing/doa and /hearing/voice_activity)",
+            helpUrl: "",
+        },
+
+        {
+            type: "sound_detector_get_direction",
+            message0: "Get sound direction into %1",
+            args0: [
+                {
+                    type: "field_variable",
+                    name: "DIRECTION",
+                    variable: "sound_direction",
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 160,
+            tooltip:
+                "Reads the latest direction of arrival angle (0-359 degrees) from the microphone array",
+            helpUrl: "",
+        },
+
+        {
+            type: "sound_detector_get_voice_activity",
+            message0: "Get voice activity into %1",
+            args0: [
+                {
+                    type: "field_variable",
+                    name: "VOICE_ACTIVE",
+                    variable: "voice_active",
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 160,
+            tooltip:
+                "Reads whether voice is currently detected (true/false) from the microphone array",
+            helpUrl: "",
+        },
+    ]);
+
 export const face_detector_blocks =
     Blockly.common.createBlockDefinitionsFromJsonArray([
         {
