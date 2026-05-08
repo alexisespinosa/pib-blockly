@@ -2,6 +2,7 @@ import {Block} from "blockly/core/block";
 import {pythonGenerator} from "blockly/python";
 import {
     CONFIGURE_LOGGING,
+    IMPORT_BOOL,
     IMPORT_COMPRESSED_IMAGE,
     IMPORT_DETECTION_2D_ARRAY,
     IMPORT_DISPLAY_IMAGE,
@@ -278,6 +279,96 @@ export function depth_detector_get_distance(
         `_depth_query_publisher.publish(_depth_query_msg)`,
         `rclpy.spin_once(node, timeout_sec=0.1)`,
         `${distanceVar} = _depth_detector_latest`,
+        ``,
+    ].join("\n");
+}
+
+export function sound_detector_start_stop(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const dropDownSetting = block.getFieldValue("SETTING");
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        IMPORT_SYS,
+        IMPORT_LOGGING,
+        IMPORT_INT32,
+        IMPORT_BOOL,
+        CONFIGURE_LOGGING,
+        INIT_ROS,
+    });
+
+    if (dropDownSetting === "START") {
+        return [
+            `_sound_doa_latest = 0`,
+            `_sound_vad_latest = False`,
+            ``,
+            `def _sound_doa_on_msg(msg):`,
+            `${generator.INDENT}global _sound_doa_latest`,
+            `${generator.INDENT}_sound_doa_latest = msg.data`,
+            ``,
+            `def _sound_vad_on_msg(msg):`,
+            `${generator.INDENT}global _sound_vad_latest`,
+            `${generator.INDENT}_sound_vad_latest = msg.data`,
+            ``,
+            `_sound_doa_subscription = node.create_subscription(`,
+            `${generator.INDENT}Int32, '/hearing/doa',`,
+            `${generator.INDENT}_sound_doa_on_msg, 10,`,
+            `)`,
+            `_sound_vad_subscription = node.create_subscription(`,
+            `${generator.INDENT}Bool, '/hearing/voice_activity',`,
+            `${generator.INDENT}_sound_vad_on_msg, 10,`,
+            `)`,
+            `logging.info("Starting sound detector")`,
+            ``,
+        ].join("\n");
+    } else {
+        return [
+            `node.destroy_subscription(_sound_doa_subscription)`,
+            `node.destroy_subscription(_sound_vad_subscription)`,
+            `logging.info("Closing sound detector")`,
+            ``,
+        ].join("\n");
+    }
+}
+
+export function sound_detector_get_direction(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const directionVar = generator.getVariableName(
+        block.getFieldValue("DIRECTION"),
+    );
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        INIT_ROS,
+    });
+
+    return [
+        `rclpy.spin_once(node, timeout_sec=0.1)`,
+        `${directionVar} = _sound_doa_latest`,
+        ``,
+    ].join("\n");
+}
+
+export function sound_detector_get_voice_activity(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const voiceActiveVar = generator.getVariableName(
+        block.getFieldValue("VOICE_ACTIVE"),
+    );
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        INIT_ROS,
+    });
+
+    return [
+        `rclpy.spin_once(node, timeout_sec=0.1)`,
+        `${voiceActiveVar} = _sound_vad_latest`,
         ``,
     ].join("\n");
 }
