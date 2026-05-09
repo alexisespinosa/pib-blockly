@@ -429,6 +429,7 @@ export function speech_recognition_get_text(
     return [
         `rclpy.spin_once(node, timeout_sec=0.1)`,
         `${speechTextVar} = _stt_latest`,
+        `_stt_latest = ""`,
         ``,
     ].join("\n");
 }
