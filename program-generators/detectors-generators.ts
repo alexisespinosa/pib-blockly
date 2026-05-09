@@ -3,6 +3,7 @@ import {pythonGenerator} from "blockly/python";
 import {
     CONFIGURE_LOGGING,
     IMPORT_BOOL,
+    IMPORT_STRING,
     IMPORT_COMPRESSED_IMAGE,
     IMPORT_DETECTION_2D_ARRAY,
     IMPORT_DISPLAY_IMAGE,
@@ -369,6 +370,65 @@ export function sound_detector_get_voice_activity(
     return [
         `rclpy.spin_once(node, timeout_sec=0.1)`,
         `${voiceActiveVar} = _sound_vad_latest`,
+        ``,
+    ].join("\n");
+}
+
+export function speech_recognition_start_stop(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const dropDownSetting = block.getFieldValue("SETTING");
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        IMPORT_SYS,
+        IMPORT_LOGGING,
+        IMPORT_STRING,
+        CONFIGURE_LOGGING,
+        INIT_ROS,
+    });
+
+    if (dropDownSetting === "START") {
+        return [
+            `_stt_latest = ""`,
+            ``,
+            `def _stt_on_msg(msg):`,
+            `${generator.INDENT}global _stt_latest`,
+            `${generator.INDENT}_stt_latest = msg.data`,
+            ``,
+            `_stt_subscription = node.create_subscription(`,
+            `${generator.INDENT}String, '/hearing/speech',`,
+            `${generator.INDENT}_stt_on_msg, 10,`,
+            `)`,
+            `logging.info("Starting speech recognition")`,
+            ``,
+        ].join("\n");
+    } else {
+        return [
+            `node.destroy_subscription(_stt_subscription)`,
+            `logging.info("Closing speech recognition")`,
+            ``,
+        ].join("\n");
+    }
+}
+
+export function speech_recognition_get_text(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const speechTextVar = generator.getVariableName(
+        block.getFieldValue("SPEECH_TEXT"),
+    );
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        INIT_ROS,
+    });
+
+    return [
+        `rclpy.spin_once(node, timeout_sec=0.1)`,
+        `${speechTextVar} = _stt_latest`,
         ``,
     ].join("\n");
 }
