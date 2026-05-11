@@ -278,7 +278,6 @@ export function depth_detector_get_distance(
         `_depth_query_msg = Int32MultiArray()`,
         `_depth_query_msg.data = [int(${x} + ${RAW_FRAME_HALF_WIDTH}), int(${RAW_FRAME_HALF_HEIGHT} - ${y})]`,
         `_depth_query_publisher.publish(_depth_query_msg)`,
-        `rclpy.spin_once(node, timeout_sec=0.1)`,
         `${distanceVar} = _depth_detector_latest`,
         ``,
     ].join("\n");
@@ -348,7 +347,6 @@ export function sound_detector_get_direction(
     });
 
     return [
-        `rclpy.spin_once(node, timeout_sec=0.1)`,
         `${directionVar} = _sound_doa_latest`,
         ``,
     ].join("\n");
@@ -368,7 +366,6 @@ export function sound_detector_get_voice_activity(
     });
 
     return [
-        `rclpy.spin_once(node, timeout_sec=0.1)`,
         `${voiceActiveVar} = _sound_vad_latest`,
         ``,
     ].join("\n");
@@ -427,7 +424,6 @@ export function speech_recognition_get_text(
     });
 
     return [
-        `rclpy.spin_once(node, timeout_sec=0.1)`,
         `${speechTextVar} = _stt_latest`,
         `_stt_latest = ""`,
         ``,
