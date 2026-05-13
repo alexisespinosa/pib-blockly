@@ -147,6 +147,48 @@ export const sound_detector_blocks =
         },
     ]);
 
+export const speech_recognition_blocks =
+    Blockly.common.createBlockDefinitionsFromJsonArray([
+        {
+            type: "speech_recognition_start_stop",
+            message0: "Speech Recognition:  %1",
+            args0: [
+                {
+                    type: "field_dropdown",
+                    name: "SETTING",
+                    options: [
+                        ["start", "START"],
+                        ["stop", "END"],
+                    ],
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 160,
+            tooltip:
+                "Starts or stops speech recognition (subscribes to /hearing/speech)",
+            helpUrl: "",
+        },
+
+        {
+            type: "speech_recognition_get_text",
+            message0: "Get recognized speech into %1",
+            args0: [
+                {
+                    type: "field_variable",
+                    name: "SPEECH_TEXT",
+                    variable: "speech_text",
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 160,
+            tooltip:
+                "Reads the latest recognized speech text from the microphone",
+            helpUrl: "",
+        },
+    ]);
+
 export const face_detector_blocks =
     Blockly.common.createBlockDefinitionsFromJsonArray([
         {
