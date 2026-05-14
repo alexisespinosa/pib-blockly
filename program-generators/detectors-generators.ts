@@ -1,5 +1,5 @@
 import {Block} from "blockly/core/block";
-import {pythonGenerator} from "blockly/python";
+import {Order, pythonGenerator} from "blockly/python";
 import {
     CONFIGURE_LOGGING,
     IMPORT_BOOL,
@@ -426,6 +426,31 @@ export function speech_recognition_get_text(
     return [
         `${speechTextVar} = _stt_latest`,
         `_stt_latest = ""`,
+        ``,
+    ].join("\n");
+}
+
+export function say_text(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const textInput = generator.valueToCode(block, "TEXT_INPUT", Order.ATOMIC);
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        IMPORT_SYS,
+        IMPORT_LOGGING,
+        IMPORT_STRING,
+        CONFIGURE_LOGGING,
+        INIT_ROS,
+        INIT_TTS_PUBLISHER: `_tts_publisher = node.create_publisher(String, '/speech/say', 10)`,
+    });
+
+    return [
+        `_tts_msg = String()`,
+        `_tts_msg.data = str(${textInput})`,
+        `_tts_publisher.publish(_tts_msg)`,
+        `logging.info(f"Say: {${textInput}}")`,
         ``,
     ].join("\n");
 }
