@@ -189,6 +189,27 @@ export const speech_recognition_blocks =
         },
     ]);
 
+export const tts_blocks =
+    Blockly.common.createBlockDefinitionsFromJsonArray([
+        {
+            type: "say_text",
+            message0: "Say %1",
+            args0: [
+                {
+                    type: "input_value",
+                    name: "TEXT_INPUT",
+                    check: "String",
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 260,
+            tooltip:
+                "Speaks the given text through pib's speaker",
+            helpUrl: "",
+        },
+    ]);
+
 export const face_detector_blocks =
     Blockly.common.createBlockDefinitionsFromJsonArray([
         {
