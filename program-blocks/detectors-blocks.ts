@@ -210,6 +210,35 @@ export const tts_blocks =
         },
     ]);
 
+export const emotion_blocks =
+    Blockly.common.createBlockDefinitionsFromJsonArray([
+        {
+            type: "set_emotion",
+            message0: "Set emotion to %1",
+            args0: [
+                {
+                    type: "field_dropdown",
+                    name: "EMOTION",
+                    options: [
+                        ["neutral", "neutral"],
+                        ["happy", "happy"],
+                        ["sad", "sad"],
+                        ["angry", "angry"],
+                        ["surprised", "surprised"],
+                        ["thinking", "thinking"],
+                        ["sleeping", "sleeping"],
+                    ],
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 200,
+            tooltip:
+                "Sets pib's facial expression to the chosen emotion",
+            helpUrl: "",
+        },
+    ]);
+
 export const face_detector_blocks =
     Blockly.common.createBlockDefinitionsFromJsonArray([
         {

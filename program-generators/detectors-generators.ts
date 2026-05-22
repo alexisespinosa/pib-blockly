@@ -455,4 +455,29 @@ export function say_text(
     ].join("\n");
 }
 
+export function set_emotion(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const emotion = block.getFieldValue("EMOTION");
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        IMPORT_SYS,
+        IMPORT_LOGGING,
+        IMPORT_STRING,
+        CONFIGURE_LOGGING,
+        INIT_ROS,
+        INIT_EMOTION_PUBLISHER: `_emotion_publisher = node.create_publisher(String, '/display_emotion', 10)`,
+    });
+
+    return [
+        `_emotion_msg = String()`,
+        `_emotion_msg.data = "${emotion}"`,
+        `_emotion_publisher.publish(_emotion_msg)`,
+        `logging.info(f"Set emotion: ${emotion}")`,
+        ``,
+    ].join("\n");
+}
+
 export {pythonGenerator};
