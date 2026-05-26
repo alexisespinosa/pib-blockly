@@ -225,6 +225,7 @@ export const emotion_blocks =
                         ["sad", "sad"],
                         ["angry", "angry"],
                         ["surprised", "surprised"],
+                        ["curious", "curious"],
                         ["thinking", "thinking"],
                         ["sleeping", "sleeping"],
                     ],
@@ -235,6 +236,54 @@ export const emotion_blocks =
             colour: 200,
             tooltip:
                 "Sets pib's facial expression to the chosen emotion",
+            helpUrl: "",
+        },
+    ]);
+
+export const enroll_face_blocks =
+    Blockly.common.createBlockDefinitionsFromJsonArray([
+        {
+            type: "enroll_face",
+            message0: "Enroll face as %1",
+            args0: [
+                {
+                    type: "field_input",
+                    name: "NAME",
+                    text: "name",
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 200,
+            tooltip:
+                "Captures the current face and stores it with the given name. Shows curious emotion and says feedback.",
+            helpUrl: "",
+        },
+    ]);
+
+export const face_identity_blocks =
+    Blockly.common.createBlockDefinitionsFromJsonArray([
+        {
+            type: "get_face_identity",
+            message0:
+                "Get face identity %1 Identity: %2",
+            args0: [
+                {
+                    type: "input_dummy",
+                },
+                {
+                    type: "field_variable",
+                    name: "IDENTITY",
+                    variable: "face_identity",
+                    variableTypes: ["String"],
+                    defaultType: "String",
+                },
+            ],
+            previousStatement: null,
+            nextStatement: null,
+            colour: 200,
+            tooltip:
+                "Gets the identity of the detected face. Returns the person's name or 'unknown'.",
             helpUrl: "",
         },
     ]);

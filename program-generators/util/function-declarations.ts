@@ -56,7 +56,7 @@ def ${generator.FUNCTION_NAME_PLACEHOLDER_}(motor_name: str) -> int:
 export const APPLY_JOINT_TRAJECTORY_FUNCTION = (generator: CodeGenerator) => `
 def ${generator.FUNCTION_NAME_PLACEHOLDER_}(motor_name: str, position: int) -> None:
 
-    logging.info(f"setting position of '{motor_name}' to {position}.")
+    logging.debug(f"setting position of '{motor_name}' to {position}.")
 
     request = ApplyJointTrajectory.Request()
     point = JointTrajectoryPoint()
@@ -71,7 +71,7 @@ def ${generator.FUNCTION_NAME_PLACEHOLDER_}(motor_name: str, position: int) -> N
 
     response: ApplyJointTrajectory.Response = future.result()
     if response.successful:
-        logging.info(f"position of '{motor_name}' was successfully set.")
+        logging.debug(f"position of '{motor_name}' was successfully set.")
     else:
         logging.error(f"setting position of '{motor_name}' failed.")
 `;

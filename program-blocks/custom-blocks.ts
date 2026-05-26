@@ -1,7 +1,7 @@
 import * as Blockly from "blockly";
 
 import {time_blocks} from "./time-blocks";
-import {depth_detector_blocks, display_on_face_blocks, emotion_blocks, face_detector_blocks, sound_detector_blocks, speech_recognition_blocks, tts_blocks} from "./detectors-blocks";
+import {depth_detector_blocks, display_on_face_blocks, emotion_blocks, enroll_face_blocks, face_detector_blocks, face_identity_blocks, sound_detector_blocks, speech_recognition_blocks, tts_blocks} from "./detectors-blocks";
 import {motor_blocks} from "./motor-blocks";
 import {playAudioFromSpeech} from "./play-audio-from-speech-block";
 import {moveToPose} from "./pose-block";
@@ -16,6 +16,8 @@ export function customBlockDefinition() {
     Blockly.common.defineBlocks(speech_recognition_blocks);
     Blockly.common.defineBlocks(tts_blocks);
     Blockly.common.defineBlocks(emotion_blocks);
+    Blockly.common.defineBlocks(enroll_face_blocks);
+    Blockly.common.defineBlocks(face_identity_blocks);
     Blockly.common.defineBlocks(motor_blocks);
     Blockly.common.defineBlocks(playAudioFromSpeech);
     Blockly.common.defineBlocks(moveToPose);

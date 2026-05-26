@@ -33,6 +33,9 @@ export const IMPORT_SET_SOLID_STATE_RELAY =
 export const IMPORT_SOLID_STATE_RELAY_STATE =
     "from datatypes.msg import SolidStateRelayState";
 
+export const IMPORT_ENROLL_FACE =
+    "from datatypes.srv import EnrollFace";
+
 // ros
 
 export const INIT_ROS = `
@@ -91,6 +94,19 @@ get_joint_position_client = node.create_client(
 
 logging.info(f"waiting for 'get_joint_position' service to become available...")
 get_joint_position_client.wait_for_service()
+logging.info(f"service now available")
+`;
+
+// enroll face
+
+export const INIT_ENROLL_FACE_CLIENT = `
+enroll_face_client = node.create_client(
+    EnrollFace,
+    '/vision/enroll_face'
+)
+
+logging.info(f"waiting for '/vision/enroll_face' service to become available...")
+enroll_face_client.wait_for_service(timeout_sec=10.0)
 logging.info(f"service now available")
 `;
 

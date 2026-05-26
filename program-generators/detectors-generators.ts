@@ -3,6 +3,7 @@ import {Order, pythonGenerator} from "blockly/python";
 import {
     CONFIGURE_LOGGING,
     IMPORT_BOOL,
+    IMPORT_ENROLL_FACE,
     IMPORT_STRING,
     IMPORT_COMPRESSED_IMAGE,
     IMPORT_DETECTION_2D_ARRAY,
@@ -13,6 +14,7 @@ import {
     IMPORT_LOGGING,
     IMPORT_RCLPY,
     IMPORT_SYS,
+    INIT_ENROLL_FACE_CLIENT,
     INIT_ROS,
 } from "./util/definitions";
 
@@ -451,6 +453,74 @@ export function say_text(
         `_tts_msg.data = str(${textInput})`,
         `_tts_publisher.publish(_tts_msg)`,
         `logging.info(f"Say: {${textInput}}")`,
+        ``,
+    ].join("\n");
+}
+
+export function enroll_face(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const name = block.getFieldValue("NAME");
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        IMPORT_SYS,
+        IMPORT_LOGGING,
+        IMPORT_ENROLL_FACE,
+        CONFIGURE_LOGGING,
+        INIT_ROS,
+        INIT_ENROLL_FACE_CLIENT,
+    });
+
+    return [
+        `_enroll_req = EnrollFace.Request()`,
+        `_enroll_req.name = "${name}"`,
+        `_enroll_req.count = 5`,
+        `_enroll_future = enroll_face_client.call_async(_enroll_req)`,
+        `rclpy.spin_until_future_complete(node, _enroll_future, timeout_sec=15.0)`,
+        `_enroll_result = _enroll_future.result()`,
+        `if _enroll_result and _enroll_result.success:`,
+        `${generator.INDENT}logging.info(f"Enrolled ${name}: {_enroll_result.captured} embeddings")`,
+        `else:`,
+        `${generator.INDENT}logging.warning("Face enrollment failed")`,
+        ``,
+    ].join("\n");
+}
+
+export function get_face_identity(
+    block: Block,
+    generator: typeof pythonGenerator,
+) {
+    const identityVar = generator.getVariableName(
+        block.getFieldValue("IDENTITY"),
+    );
+
+    Object.assign(generator.definitions_, {
+        IMPORT_RCLPY,
+        IMPORT_SYS,
+        IMPORT_LOGGING,
+        IMPORT_DETECTION_2D_ARRAY,
+        CONFIGURE_LOGGING,
+        INIT_ROS,
+    });
+
+    return [
+        `_face_rec_latest = "unknown"`,
+        ``,
+        `def _face_rec_on_msg(msg):`,
+        `${generator.INDENT}global _face_rec_latest`,
+        `${generator.INDENT}if msg.detections:`,
+        `${generator.INDENT}${generator.INDENT}_largest = max(msg.detections, key=lambda d: d.bbox.size_x * d.bbox.size_y)`,
+        `${generator.INDENT}${generator.INDENT}if _largest.results:`,
+        `${generator.INDENT}${generator.INDENT}${generator.INDENT}_face_rec_latest = _largest.results[0].hypothesis.class_id`,
+        ``,
+        `_face_rec_sub = node.create_subscription(`,
+        `${generator.INDENT}Detection2DArray, '/vision/face_recognitions',`,
+        `${generator.INDENT}_face_rec_on_msg, 10,`,
+        `)`,
+        `rclpy.spin_once(node, timeout_sec=0.5)`,
+        `${identityVar} = _face_rec_latest`,
         ``,
     ].join("\n");
 }
