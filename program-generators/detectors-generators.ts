@@ -148,7 +148,7 @@ export function display_on_face(
                 `${generator.INDENT}_display_face_latest_detections = msg.detections`,
                 ``,
                 `_display_face_detections_sub = node.create_subscription(`,
-                `${generator.INDENT}Detection2DArray, '/vision/face_detections',`,
+                `${generator.INDENT}Detection2DArray, '/vision/face_recognitions',`,
                 `${generator.INDENT}_display_face_on_detections, 10,`,
                 `)`,
                 ``,
@@ -176,7 +176,7 @@ export function display_on_face(
                 `${generator.INDENT}${generator.INDENT}overlay.y.append(det.bbox.center.position.y / ${RAW_FRAME_HALF_HEIGHT} / 2.0)`,
                 `${generator.INDENT}${generator.INDENT}overlay.width.append(det.bbox.size_x / ${RAW_FRAME_HALF_WIDTH} / 2.0)`,
                 `${generator.INDENT}${generator.INDENT}overlay.height.append(det.bbox.size_y / ${RAW_FRAME_HALF_HEIGHT} / 2.0)`,
-                `${generator.INDENT}${generator.INDENT}overlay.labels.append("")`,
+                `${generator.INDENT}${generator.INDENT}overlay.labels.append(det.results[0].hypothesis.class_id if det.results else "")`,
                 `${generator.INDENT}_display_overlay_pub.publish(overlay)`,
             );
         }
