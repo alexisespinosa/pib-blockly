@@ -142,14 +142,28 @@ export function display_on_face(
         if (needsFaceOverlay) {
             lines.push(
                 `_display_face_latest_detections = []`,
+                `_display_face_identity_map = {}`,
                 ``,
                 `def _display_face_on_detections(msg):`,
                 `${generator.INDENT}global _display_face_latest_detections`,
                 `${generator.INDENT}_display_face_latest_detections = msg.detections`,
                 ``,
+                `def _display_face_on_recognitions(msg):`,
+                `${generator.INDENT}global _display_face_identity_map`,
+                `${generator.INDENT}_display_face_identity_map = {}`,
+                `${generator.INDENT}for det in msg.detections:`,
+                `${generator.INDENT}${generator.INDENT}if det.results:`,
+                `${generator.INDENT}${generator.INDENT}${generator.INDENT}cx = det.bbox.center.position.x`,
+                `${generator.INDENT}${generator.INDENT}${generator.INDENT}cy = det.bbox.center.position.y`,
+                `${generator.INDENT}${generator.INDENT}${generator.INDENT}_display_face_identity_map[(int(cx), int(cy))] = det.results[0].hypothesis.class_id`,
+                ``,
                 `_display_face_detections_sub = node.create_subscription(`,
-                `${generator.INDENT}Detection2DArray, '/vision/face_recognitions',`,
+                `${generator.INDENT}Detection2DArray, '/vision/face_detections',`,
                 `${generator.INDENT}_display_face_on_detections, 10,`,
+                `)`,
+                `_display_face_recognitions_sub = node.create_subscription(`,
+                `${generator.INDENT}Detection2DArray, '/vision/face_recognitions',`,
+                `${generator.INDENT}_display_face_on_recognitions, 10,`,
                 `)`,
                 ``,
                 `_display_overlay_pub = node.create_publisher(DisplayOverlay, '/display_overlay', 10)`,
@@ -172,11 +186,14 @@ export function display_on_face(
             lines.push(
                 `${generator.INDENT}overlay = DisplayOverlay()`,
                 `${generator.INDENT}for det in _display_face_latest_detections:`,
-                `${generator.INDENT}${generator.INDENT}overlay.x.append(det.bbox.center.position.x / ${RAW_FRAME_HALF_WIDTH} / 2.0)`,
-                `${generator.INDENT}${generator.INDENT}overlay.y.append(det.bbox.center.position.y / ${RAW_FRAME_HALF_HEIGHT} / 2.0)`,
+                `${generator.INDENT}${generator.INDENT}cx = det.bbox.center.position.x`,
+                `${generator.INDENT}${generator.INDENT}cy = det.bbox.center.position.y`,
+                `${generator.INDENT}${generator.INDENT}overlay.x.append(cx / ${RAW_FRAME_HALF_WIDTH} / 2.0)`,
+                `${generator.INDENT}${generator.INDENT}overlay.y.append(cy / ${RAW_FRAME_HALF_HEIGHT} / 2.0)`,
                 `${generator.INDENT}${generator.INDENT}overlay.width.append(det.bbox.size_x / ${RAW_FRAME_HALF_WIDTH} / 2.0)`,
                 `${generator.INDENT}${generator.INDENT}overlay.height.append(det.bbox.size_y / ${RAW_FRAME_HALF_HEIGHT} / 2.0)`,
-                `${generator.INDENT}${generator.INDENT}overlay.labels.append(det.results[0].hypothesis.class_id if det.results else "")`,
+                `${generator.INDENT}${generator.INDENT}_label = min(_display_face_identity_map.items(), key=lambda kv: (kv[0][0]-cx)**2 + (kv[0][1]-cy)**2, default=(None, ""))[1] if _display_face_identity_map else ""`,
+                `${generator.INDENT}${generator.INDENT}overlay.labels.append(_label)`,
                 `${generator.INDENT}_display_overlay_pub.publish(overlay)`,
             );
         }
@@ -198,6 +215,7 @@ export function display_on_face(
         if (needsFaceOverlay) {
             lines.push(
                 `node.destroy_subscription(_display_face_detections_sub)`,
+                `node.destroy_subscription(_display_face_recognitions_sub)`,
                 `_empty_overlay = DisplayOverlay()`,
                 `_display_overlay_pub.publish(_empty_overlay)`,
             );
