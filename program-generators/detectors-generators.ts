@@ -512,6 +512,8 @@ export function get_face_identity(
             `${generator.INDENT}${generator.INDENT}_largest = max(msg.detections, key=lambda d: d.bbox.size_x * d.bbox.size_y)`,
             `${generator.INDENT}${generator.INDENT}if _largest.results:`,
             `${generator.INDENT}${generator.INDENT}${generator.INDENT}_face_rec_latest = _largest.results[0].hypothesis.class_id`,
+            `${generator.INDENT}else:`,
+            `${generator.INDENT}${generator.INDENT}_face_rec_latest = "unknown"`,
             ``,
             `_face_rec_sub = node.create_subscription(`,
             `${generator.INDENT}Detection2DArray, '/vision/face_recognitions',`,
@@ -523,7 +525,6 @@ export function get_face_identity(
 
     return [
         `${identityVar} = _face_rec_latest`,
-        `_face_rec_latest = "unknown"`,
         ``,
     ].join("\n");
 }
