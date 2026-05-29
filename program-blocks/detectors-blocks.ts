@@ -267,7 +267,7 @@ export const face_identity_blocks =
         {
             type: "get_face_identity",
             message0:
-                "Get face identity %1 Identity: %2",
+                "Get face identity %1 Identity: %2  Tracker ID: %3",
             args0: [
                 {
                     type: "input_dummy",
@@ -279,12 +279,19 @@ export const face_identity_blocks =
                     variableTypes: ["String"],
                     defaultType: "String",
                 },
+                {
+                    type: "field_variable",
+                    name: "TRACKER_ID",
+                    variable: "face_tracker_id",
+                    variableTypes: ["Number"],
+                    defaultType: "Number",
+                },
             ],
             previousStatement: null,
             nextStatement: null,
             colour: 200,
             tooltip:
-                "Gets the identity of the detected face. Returns the person's name or 'unknown'.",
+                "Gets the identity and tracker ID of the detected face. Identity is the person's name or 'unknown'. Tracker ID is consistent for the same face across frames.",
             helpUrl: "",
         },
     ]);

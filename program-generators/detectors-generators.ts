@@ -514,6 +514,9 @@ export function get_face_identity(
     const identityVar = generator.getVariableName(
         block.getFieldValue("IDENTITY"),
     );
+    const trackerIdVar = generator.getVariableName(
+        block.getFieldValue("TRACKER_ID"),
+    );
 
     Object.assign(generator.definitions_, {
         IMPORT_RCLPY,
@@ -524,17 +527,20 @@ export function get_face_identity(
         INIT_ROS,
         INIT_FACE_REC: [
             `_face_rec_latest = "unknown"`,
+            `_face_rec_tracker_id = -1`,
             ``,
             `def _face_rec_on_msg(msg):`,
-            `${generator.INDENT}global _face_rec_latest`,
+            `${generator.INDENT}global _face_rec_latest, _face_rec_tracker_id`,
             `${generator.INDENT}if msg.detections:`,
             `${generator.INDENT}${generator.INDENT}_largest = max(msg.detections, key=lambda d: d.bbox.size_x * d.bbox.size_y)`,
             `${generator.INDENT}${generator.INDENT}if _largest.results:`,
             `${generator.INDENT}${generator.INDENT}${generator.INDENT}_face_rec_latest = _largest.results[0].hypothesis.class_id`,
             `${generator.INDENT}${generator.INDENT}else:`,
             `${generator.INDENT}${generator.INDENT}${generator.INDENT}_face_rec_latest = "unknown"`,
+            `${generator.INDENT}${generator.INDENT}_face_rec_tracker_id = int(_largest.id) if _largest.id else -1`,
             `${generator.INDENT}else:`,
             `${generator.INDENT}${generator.INDENT}_face_rec_latest = "unknown"`,
+            `${generator.INDENT}${generator.INDENT}_face_rec_tracker_id = -1`,
             ``,
             `_face_rec_sub = node.create_subscription(`,
             `${generator.INDENT}Detection2DArray, '/vision/face_recognitions',`,
@@ -546,6 +552,7 @@ export function get_face_identity(
 
     return [
         `${identityVar} = _face_rec_latest`,
+        `${trackerIdVar} = _face_rec_tracker_id`,
         ``,
     ].join("\n");
 }
