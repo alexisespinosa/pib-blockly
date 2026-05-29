@@ -480,7 +480,7 @@ export function enroll_face(
     block: Block,
     generator: typeof pythonGenerator,
 ) {
-    const name = block.getFieldValue("NAME");
+    const name = generator.valueToCode(block, "NAME", Order.ATOMIC) || "''";
 
     Object.assign(generator.definitions_, {
         IMPORT_RCLPY,
@@ -494,13 +494,13 @@ export function enroll_face(
 
     return [
         `_enroll_req = EnrollFace.Request()`,
-        `_enroll_req.name = "${name}"`,
+        `_enroll_req.name = str(${name})`,
         `_enroll_req.count = 5`,
         `_enroll_future = enroll_face_client.call_async(_enroll_req)`,
         `rclpy.spin_until_future_complete(node, _enroll_future, timeout_sec=15.0)`,
         `_enroll_result = _enroll_future.result()`,
         `if _enroll_result and _enroll_result.success:`,
-        `${generator.INDENT}logging.info(f"Enrolled ${name}: {_enroll_result.captured} embeddings")`,
+        `${generator.INDENT}logging.info(f"Enrolled {${name}}: {_enroll_result.captured} embeddings")`,
         `else:`,
         `${generator.INDENT}logging.warning("Face enrollment failed")`,
         ``,

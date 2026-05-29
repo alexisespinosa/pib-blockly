@@ -248,9 +248,9 @@ export const enroll_face_blocks =
             message0: "Enroll face as %1",
             args0: [
                 {
-                    type: "field_input",
+                    type: "input_value",
                     name: "NAME",
-                    text: "name",
+                    check: "String",
                 },
             ],
             previousStatement: null,
