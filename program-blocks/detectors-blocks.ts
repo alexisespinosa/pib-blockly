@@ -226,6 +226,7 @@ export const emotion_blocks =
                         ["angry", "angry"],
                         ["surprised", "surprised"],
                         ["curious", "curious"],
+                        ["focused", "focused"],
                         ["thinking", "thinking"],
                         ["sleeping", "sleeping"],
                     ],
