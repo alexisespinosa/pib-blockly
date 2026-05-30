@@ -570,7 +570,7 @@ export function set_emotion(
         `_emotion_msg = String()`,
         `_emotion_msg.data = "${emotion}"`,
         `_emotion_publisher.publish(_emotion_msg)`,
-        `logging.info(f"Set emotion: ${emotion}")`,
+        `logging.debug(f"Set emotion: ${emotion}")`,
         ``,
     ].join("\n");
 }
